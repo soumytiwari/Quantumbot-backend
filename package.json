@@ -1,0 +1,28 @@
+{
+  "name": "quantumbot-backend",
+  "version": "1.0.0",
+  "description": "Backend for ReX AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/index.js -e js, css, html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soumytiwari/Quantumbot-backend.git"
+  },
+  "author": "Soumya Tiwari",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soumytiwari/Quantumbot-backend/issues"
+  },
+  "homepage": "https://github.com/soumytiwari/Quantumbot-backend#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
+
