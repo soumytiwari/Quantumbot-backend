@@ -74,7 +74,7 @@ function closeNav() {
     image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAzUlEQVRIS+3VsQ3CMBAF0LOUAeImNaPACGzCJozACKzCBpQpUjgDRAl3iBIk/38n0thSlMbRy32fzkl2WmknVxr8t+Rb1FVRl1L6nPNctfnHJjjqMk1HSekm63rOw/BgcQi2SmVZnor1+syybScWh2CrTiu+6uvyqZTGYTgKp+AInIa9uAv24BGwNZo1nK3qZnPB2uEUan9Iwx6Uhr0oBUegMFzG8SBdZyMTaqRv8xw+4/clIXL3zGm4YvYmCqk4CoejbjCbQIuaTQ7+7gVkBnQfqvJaVQAAAABJRU5ErkJggg==";
 }
 
-function newSession(id) {
+function newSession() {
     document.getElementById('logo').style.display = 'flex';
     const chatcontainer = document.getElementById('chat-container');
     chatcontainer.replaceChildren();
@@ -199,6 +199,7 @@ function load_message(bot_message, id) {
     chatbox.appendChild(loader);
     setTimeout(display_bot_message, 4000, bot_message, id);
 }
+
 function display_bot_message(bot_message, id,  ishistory = false) {
     const chatbox = document.getElementById(id);
 
@@ -231,7 +232,7 @@ function openSession(sessionID) {
     
     if (active_session != null) {
         if (active_session.id == sessionID) { return }
-        newSession('history');
+        newSession();
     }
     document.getElementById('logo').style.display = 'none';
     document.getElementById('history').style.display = 'flex';
