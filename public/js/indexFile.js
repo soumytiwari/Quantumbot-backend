@@ -74,8 +74,8 @@ function closeNav() {
     image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAzUlEQVRIS+3VsQ3CMBAF0LOUAeImNaPACGzCJozACKzCBpQpUjgDRAl3iBIk/38n0thSlMbRy32fzkl2WmknVxr8t+Rb1FVRl1L6nPNctfnHJjjqMk1HSekm63rOw/BgcQi2SmVZnor1+syybScWh2CrTiu+6uvyqZTGYTgKp+AInIa9uAv24BGwNZo1nK3qZnPB2uEUan9Iwx6Uhr0oBUegMFzG8SBdZyMTaqRv8xw+4/clIXL3zGm4YvYmCqk4CoejbjCbQIuaTQ7+7gVkBnQfqvJaVQAAAABJRU5ErkJggg==";
 }
 
-function newSession() {
-    logo.style.display = 'flex';
+function newSession(id) {
+    document.getElementById('logo').style.display = 'flex';
     const chatcontainer = document.getElementById('chat-container');
     chatcontainer.replaceChildren();
     chatcontainer.style.display = 'none';
@@ -84,10 +84,6 @@ function newSession() {
 
     const btn = document.getElementById(last_session_id);
     btn.style.backgroundColor = 'transparent';
-
-    // btn.addEventListener('mouseover', () => {
-    //     btn.style.backgroundColor = '#292929';
-    // });
 
 }
 
@@ -101,7 +97,6 @@ function sendMessage() {
         let currentsession = active_session;
 
         const botmessage = botResponse(message);
-
         if (currentsession == null) {
             let newSession = new Session(sessioncount += 1);
             sessions.push(newSession);
@@ -113,18 +108,18 @@ function sendMessage() {
             document.dispatchEvent(new_event);
             document.getElementById(active_session.id).style.backgroundColor = '#292929';
         }
+        
+        let message_id = `message-${active_session.messagecount}`;
+        currentsession.messagecount += 1;
         let current_message = {
+            id: message_id,
             user: message,
             bot: botmessage,
             timestamp: new Date().toLocaleString()
         }
-
         currentsession.addMessage(current_message);
-        currentsession.messagecount += 1;
 
-        displayMessage(message, botmessage);
-
-        // console.log(currentsession);
+        displayMessage(message, botmessage, message_id);
         const chatcontainer = document.getElementById('chat-container');
         chatcontainer.scrollTop = chatcontainer.scrollHeight;
         userInput.value = '';
@@ -139,7 +134,7 @@ function botResponse(user_message) {
 function getHeadline(str) {
     str = str.trim();
     let words = str.split(/\s+/);
-    let firstWords = words.slice(0, 5);
+    let firstWords = words.slice(0, 2);
     let result = firstWords.join(' ');
     return result;
 }
@@ -163,9 +158,10 @@ function typeWriter(message, id) {
     type();
 }
 
-function displayMessage(message, bot_message) {
+function displayMessage(message, bot_message, id, ishistory = false) {
     const logo = document.getElementById('logo');
     if (message !== '') {
+        document.getElementById('history').style.display = 'none';
         logo.style.display = 'none';
         const chatcontainer = document.getElementById('chat-container');
         chatcontainer.style.display = 'flex';
@@ -173,8 +169,7 @@ function displayMessage(message, bot_message) {
         const messagebox = document.createElement('div');
         messagebox.classList.add('chat');
         messagebox.classList.add('border');
-        messagebox.id = `message-${active_session.messagecount}`;
-        console.log(active_session.messagecount);
+        messagebox.id = id;
         messagebox.innerHTML =
             `<div class="box border" id = 'user'>
             <div class = 'user-info'>
@@ -185,24 +180,32 @@ function displayMessage(message, bot_message) {
         </div>
         `;
         chatcontainer.appendChild(messagebox);
-        load_message(bot_message);
+
+        if(ishistory) {
+            display_bot_message(bot_message, id, true);
+        }else {
+            load_message(bot_message, id);
+        }
     }
 }
 
-function load_message(bot_message) {
-    const chatbox = document.getElementById(`message-${active_session.messagecount}`);
+function load_message(bot_message, id) {
+    const chatbox = document.getElementById(id);
     const loader = document.createElement('div');
-    loader.classList.add('loader');
+    loader.id = 'loader';
     loader.innerHTML = `<span></span>
     <span></span>
     <span></span>`;
     chatbox.appendChild(loader);
-    setTimeout(display_bot_message, 4000, bot_message);
+    setTimeout(display_bot_message, 4000, bot_message, id);
 }
-function display_bot_message(bot_message) {
-    const chatbox = document.getElementById(`message-${active_session.messagecount}`);
-    const loader = document.getElementsByClassName('loader');
-    loader[active_session.messagecount - 1].style.display = "none";
+function display_bot_message(bot_message, id,  ishistory = false) {
+    const chatbox = document.getElementById(id);
+
+    if(!ishistory) {
+        const loader = document.getElementById('loader');
+        loader.remove();
+    }
     const messagebox = document.createElement('div');
     messagebox.classList.add('box');
     messagebox.classList.add('border');
@@ -212,35 +215,36 @@ function display_bot_message(bot_message) {
     <img class = 'avatar' src="static/images/Frame_1321316226.png" alt="AI"/>
     <span class = "you">Bot</span>
     </div>
-    <div class = 'message' id = ${message_id}></div>
+    <div class = 'message' id = ${message_id}>
+    ${ishistory?bot_message:''}
+    </div>
     `;
     chatbox.appendChild(messagebox);
-    typeWriter(bot_message, message_id);
+
+    if(!ishistory) {
+        typeWriter(bot_message, message_id);
+    }
 }
 
-// slack
-// <img class = 'avatar' src="https://img.icons8.com/ios-filled/color/slack-new.png" alt="slack-new"/> 
-// <img class = 'avatar' src="Frame_1321316226.png" alt="slack-new"/>
-// at avatar 
 
-function openSession(s_id) {
-    // console.log('session trying to open');
-
-
+function openSession(sessionID) {
+    
     if (active_session != null) {
-        // document.getElementById(last_session_id).style.backgroundColor = 'transparent';
-        if (active_session.id == s_id) { return }
-        newSession();
+        if (active_session.id == sessionID) { return }
+        newSession('history');
     }
+    document.getElementById('logo').style.display = 'none';
+    document.getElementById('history').style.display = 'flex';
+    setTimeout(load_history, 5000, sessionID);
+}
+
+function load_history(s_id) {
     active_session = sessions[s_id - 1];
     document.getElementById(s_id).style.backgroundColor = '#4e4d4d';
-    console.log(active_session);
-    console.log(active_session.messages);
     messages = active_session.messages;
     messages.forEach(m => {
-        displayMessage(m.user, m.bot);
+        displayMessage(m.user, m.bot, m.id, true);
     });
     const chatcontainer = document.getElementById('chat-container');
     chatcontainer.scrollTop = chatcontainer.scrollHeight;
 }
-
