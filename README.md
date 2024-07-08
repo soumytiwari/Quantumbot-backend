@@ -3,7 +3,7 @@ A robust backend service for a chatbot named ReX.
 
 ## Overview
 The service is responsible for receiving user messages, managing chat sessions, and providing relevant responses based on the server request.
-* #### Using Firebase as its server.
+* #### Used Firebase as its server.
 
 ## Core Features
 1.  Message Reception and Response
